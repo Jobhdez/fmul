@@ -1,3 +1,4 @@
+#include <cstring>
 #include <cstdint>
 #include <iostream>
 #include <bitset>
@@ -95,9 +96,9 @@ _Float16 fmul(float aa, float bb) {
     std::cout << "the max between the leading zeros of y and the bit width ofthe  exponent wise" << my << std::endl;
   std::cout << "leading zeros of significand y: " << lambday << std::endl;
   std::cout << "bit pattern of leading zeros of significand y: " << std::bitset<32>(lambday) << std::endl;
-  uint32_t dm1;
-  uint32_t mpx, mpy, highs, m, lows, c, g, hight, lowt, morlowt, b;
-
+  uint16_t dm1;
+  uint32_t mpx, mpy, highs,lows, c, g, hight, lowt, morlowt, b;
+uint32_t m;
   mpx = (aa_bits << mx) | 0x80000000; // normalize significand x
   mpy = (bb_bits << my) |  0x80000000; // normalize significand y
   std::cout << "normalized significand_x : " << std::bitset<32>(mpx) << std::endl;
@@ -118,7 +119,7 @@ _Float16 fmul(float aa, float bb) {
     std::cout << "lower half of the product of the mantissas :"<< std::bitset<32>(lows) << std::endl;
   std::cout << "lower half value of the product of the mantissas : " << lows << std::endl;
   lowt = (lows != 0);
-  m = highs >> (7 + c);
+  m = (highs >> (7 + c));
   std::cout << "m, the significand: " << m << std::endl;
   std::cout << " the bit pattern for m: " << std::bitset<32>(m) <<std::endl;
   morlowt = m | lowt;
@@ -133,17 +134,21 @@ _Float16 fmul(float aa, float bb) {
   b = g & (morlowt | hight);
   std::cout << "bit b ie round to nearest: " << b << std::endl;
   std::cout << "bit pattern for b: " << std::bitset<32>(b) << std::endl;
-  dm1 = (((ex - nx) + (ey - ny)) - ((mx + my) + 110)) + c; // biased exponent
+  dm1 = (((ex - nx) + (ey - ny)) - ((mx + my) + 6)) + c; // biased exponent
   std::cout << "exponent of result: " << std::bitset<32>(dm1) << std::endl;
   std::cout << "value of exponent: " << dm1 << std::endl;
-  uint32_t sr = (aa_bits ^ bb_bits) & 0x80000000;
+  uint16_t sr = (aa_bits ^ bb_bits) & 0x80000000;
   std::cout << "sign bit of result : " << sr << std::endl;
-  uint32_t result = ((sr | (dm1 << 23)) + m) + b;
-  std::cout << "product of mantissas: " << std::bitset<32>(result) << std::endl;
+  uint16_t exp16 = sr | (dm1 << 11);
+  std::cout << "exp16 " << std::bitset<16>(exp16) << std::endl;
+  uint16_t result = ((sr | (dm1 << 11)) + m) + b;
+  std::cout << "product of mantissas: " << std::bitset<16>(result) << std::endl;
   std::cout << "value of product of mantissas: " << result << std::endl;
-    
+  _Float16 result16;
+  std::memcpy(&result16, &result, sizeof(result16));  
   //result = *reinterpret_cast<_Float16*>(&result);
-  return result;
+  std::cout << "product of float16 bit pattern" << std::bitset<16>(result16) << std::endl;
+  return result16;
 }
 
 int main() {
