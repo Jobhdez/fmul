@@ -159,8 +159,10 @@ _Float16 fmul(float aa, float bb) {
 
   uint16_t exp16 = sr | (dm1 << 10);
   print_bits(exp16, "exp16");
-
-  uint16_t result = (exp16 + m) + b;
+  constexpr uint16_t FLOAT16_MANTISSA_MASK = 0b0000001111111111;
+  uint16_t m2 = m & FLOAT16_MANTISSA_MASK;
+  print_bits(m2, "mantissa mask");
+  uint16_t result = (exp16 + m2) + b;
   print_bits(result, "result");
 
   _Float16 result16 = std::bit_cast<_Float16>(result);
