@@ -177,11 +177,11 @@ float fmul(double aa, double bb) {
 }
 
 int main() {
-    double x = 3.0;
-    double y = 5.0;
+  double x = 3.0;
+  double y = 5.0;
 
     print_variable(fmul(x, y), "fmul(x, y)");
-    float number = 15.0;
+    float number = x*y;
     print_variable(number, "number");
     
     return 0;
