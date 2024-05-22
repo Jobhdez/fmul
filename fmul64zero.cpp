@@ -162,11 +162,20 @@ float fmul(double aa, double bb) {
     m = 0;
     morlowt = m | lowt;
     b = 0;
-  } else  {
+  }
+  else if (dm1<=0) {
+    dm1 = 0;
+    m = (highs >> (39 + c));
+    print_variable(m, "m when dm1 = 0");
+    print_bits(m, "m bits when dm1 =0");
+    
+    morlowt = m | lowt;
+    b = g & (morlowt | hight);
+  }
+  else  {
     m = (highs >> (39 + c));
     morlowt = m | lowt;
     b = g & (morlowt | hight);
-    
   }
   print_variable(dm1, "dm1");
   print_bits(dm1, "dm1");
@@ -176,10 +185,12 @@ float fmul(double aa, double bb) {
 
   uint32_t exp16 = sr | (dm1 << 23);
   print_bits(exp16, "exp16");
-  constexpr uint32_t FLOAT32_MANTISSA_MASK = 0b00000000011111111111111111111111;
-  uint32_t m2 = m & FLOAT32_MANTISSA_MASK;
-   print_bits(m2, "mantissa mask");
-  uint32_t result = (exp16 + m2) + b;
+  //constexpr uint32_t FLOAT32_MANTISSA_MASK = 0b00000000011111111111111111111111;
+ // uint32_t m2 = m & FLOAT32_MANTISSA_MASK;
+ uint32_t m2 = m;
+ uint32_t m3 = m2 >> 1;
+ print_bits(m3, "mantissa mask");
+  uint32_t result = (exp16 + m3) + b;
   print_bits(result, "result");
   float result16 = std::bit_cast<float>(result);
   // std::memcpy(&result16, &result, sizeof(result16));  
