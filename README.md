@@ -1,1 +1,5 @@
-fmul64ofuf refers to the version where everything is done including of=overflow and uf=underflow and normal stuff. the only thing is left is rounding modes.
+# fmul
+
+These files correspond to the code that led to the fmul implementation I did a few days ago. You can check out my pr [here](https://github.com/llvm/llvm-project/pull/91537#event-13089100317).
+
+thanks
