@@ -111,6 +111,10 @@ float fmul(double aa, double bb) {
   print_variable(ny, "ny");
 
   uint64_t mx, my, lambday, lambdax;
+  /* the purpose of mx and my which either are the leading zeros or 11 is to shift the leading zeros of the mantissas so the most significand
+     bit is 1 or the the second most signigicant  bit is 1. we shift the aa_bits by mx for instance below. this will normalize the significand.
+     if we dont do this when we do mul(mpx, mpy) and mullow(mpx, mpy) the leading 1 bit can be anywhere in the 128 bits.
+  */
   // the max between the leading zeros of x and the bit width ofthe  exponent wise
   mx = maxu(nlz(absx), 11); // nlz(absx) = leading zeros of x and 8 is the bit width of the exponent bias
   print_variable(mx, "mx");
@@ -133,7 +137,7 @@ float fmul(double aa, double bb) {
   print_bits(mpx, "mpx");
   print_bits(mpy, "mpy");
   highs = mul(mpx, mpy); // upper 32-bit of the product of mantissas
-  c = highs >= 0x8000000000000000; // c = 0 if m'xm'y in [1,2) else 1 if m'xm'y in [2,4)
+  c = highs >= 0x8000000000000000; // c = 0 if m'xm'y in [1,2) else 1 if m'xm'y in [2,4). checks whether highs is normal or subnormal
   print_variable(c, "c");
   lows = mullow(mpx, mpy); // lower 32-bit of the product of mantissas
 
@@ -152,10 +156,10 @@ float fmul(double aa, double bb) {
   print_variable(hight, "sticky bit for highs");
   print_variable(lowt, "sticky bit for lows");
   // b denotes the bit used to round to nearest in RN(l) = (1.s1,..s23) (base 2)  + B^-23
-  b = g & (morlowt | hight);
+  b = g & (morlowt | hight); // b determines the rounding mode. in my actual llvm implementation theres different formulas for b to account for the different rounding modes. since this implementation in this file only accounts for rounding to nearest i believe.
   print_bits(b, "b");
 
-  dm1 = ((ex + ey) - 1919) + c; // biased exponent
+  dm1 = ((ex + ey) - 1919) + c; // biased exponent.... the 1919 is obtained from 2bias + bias' where bias is the bias of the double precision. remember bias=emax and where bias' is the bias of the single precision 
   print_variable(dm1, "dm1");
   print_bits(dm1, "dm1");
 
