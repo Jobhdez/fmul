@@ -142,11 +142,11 @@ float fmul(double aa, double bb) {
   print_bits(lows, "lows");
 
   lowt = (lows != 0);
-  m = (highs >> (39 + c)); // the significand 8 = 60 - 52
+  m = (highs >> (39 + c)); // the reason we shift by 39 is to get the mantissa of size 24-25. for 32 bit precision the mantissa field is 24 bit
   print_bits(m, "m");
   morlowt = m | lowt;
 
-  g = (highs >> (38 + c)) & 1;
+  g = (highs >> (38 + c)) & 1; // 38 + c is from 63 - 24. the 24th bit is the rounding bit. g is the rounding bit
   hight = (highs << (55 - c)) != 0;
   print_variable(g, "guard bit");
   print_variable(hight, "sticky bit for highs");
